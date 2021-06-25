@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+
+<config>
+        <path>
+                <definition>C:\Programs\elastic\bulker_application\df</definition>
+                <lockfile>C:\Programs\elastic\bulker_application\lock</lockfile>
+                <result>C:\Programs\elastic\bulker_application\result\[%INDEX_NAME%]</result>
+                <log>C:\Programs\elastic\bulker_application\log\[%INDEX_DATE%]</log>
+                <download>C:\Programs\elastic\bulker_application\download\[%INDEX_NAME%]</download>
+                <error>C:\Programs\elastic\bulker_application\error\[%INDEX_NAME%]</error>
+                <warn>C:\Programs\elastic\bulker_application\warn\[%INDEX_NAME%]</warn>
+                <etcreader>C:\Programs\elastic\bulker_application\bin\com\sql\etcreader</etcreader>
+        </path>
+        <metadb>
+                <driverclass></driverclass>
+                <url></url>
+                <user></user>
+                <pass></pass>
+        </metadb>
+        <timezone>Asia/Seoul</timezone>
+</config>

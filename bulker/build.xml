@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ######################################################### -->
+<!-- ant build script for Bulker                               -->
+<!-- ######################################################### -->
+<project name="bulker" default="jar-all" basedir=".">
+    <property name="build.debug" value="on" />
+    <property name="build.charset" value="UTF-8" />
+	
+    <property name="project.java.dir" location="${basedir}/src/java" />
+    <property name="project.name" value="bulker" />
+    <property name="project.lib.dir" location="${basedir}/lib" /> 
+    
+    <!-- ######################################################### -->
+    <!-- properties configuration setting for bulker-client        -->
+    <!-- ######################################################### -->
+    <property name="bulker.project.dir" location="${basedir}/bulker-client" />
+    <property name="bulker.build.dir" location="${bulker.project.dir}/build" />
+    <property name="bulker.build.classes.dir" location="${bulker.build.dir}/classes" />
+    <property name="bulker.java.dir" location="${bulker.project.dir}/src" />
+	<property name="bulker.classes.except.dir" location="${bulker.build.dir}/classes/com/sql" />
+	<property name="bulker.jar.except.dir" location="${bulker.classes.except.dir}/etcreader" />
+
+    <!-- ######################################################### -->
+    <!-- properties configuration setting for bulker-client         -->
+    <!-- ######################################################### -->
+	<property name="dist.dir" location="${basedir}/bulker-dist" />
+	<property name="dist.backup.dir" location="${dist.dir}/backup" />
+	<property name="dist.bin.dir" location="${dist.dir}/bin" />
+	<property name="dist.log.dir" location="${dist.dir}/log" />
+    <property name="dist.config.dir" location="${dist.dir}/config" />
+	<property name="dist.dist.dir" location="${dist.dir}/dist" />
+	<property name="dist.lib.dir" location="${dist.dir}/dist/lib" />
+	<property name="dist.class.dir" location="${dist.bin.dir}/com/sql" />
+	
+    <!-- ######################################################### -->
+    <!-- ClassPath configuration setting                           -->
+    <!-- ######################################################### -->
+    
+    <path id="project.lib.classpath">
+        <fileset dir="${project.lib.dir}" includes="*.jar" />
+    </path>  
+    
+    <path id="Project.classpath">
+        <path refid="project.lib.classpath" />
+    </path> 
+    
+    
+    <!-- ######################################################### -->
+    <!-- endpoint targets                                          -->
+    <!-- ######################################################### -->  
+    <target name="clean-all" depends="clean-bulker,  clean-dist" description="clean all" />
+    <target name="init-all" depends="init-bulker,  init-dist" description="init all" />
+    <target name="build-all" depends="build-bulker" description="build all" />
+    <target name="jar-all" depends="jar-bulker" description="jar all" />
+	
+    <!-- ######################################################### -->
+    <!-- clean -->
+    <!-- ######################################################### -->
+    <target name="clean-bulker">
+        <delete dir="${bulker.build.classes.dir}" />
+        <delete dir="${bulker.java.dir}" />
+    </target>   
+    
+    <target name="clean-dist">
+        <delete dir="${dist.dir}" />
+    </target>
+	
+	<target name="clean-bulker-client">
+		<delete dir="${bulker.project.dir}" />
+	</target>
+    
+    <!-- ######################################################### -->
+    <!-- initialize -->
+    <!-- ######################################################### -->
+    <target name="init-bulker" depends="clean-bulker">
+        <mkdir dir="${bulker.project.dir}" />
+        <mkdir dir="${bulker.build.dir}" />
+        <mkdir dir="${bulker.build.classes.dir}" />
+        <mkdir dir="${bulker.java.dir}" />
+        <copy todir="${bulker.java.dir}">
+            <fileset dir="${project.java.dir}" />
+        </copy>
+        
+    </target> 
+    
+    <target name="init-dist" depends="clean-dist">
+        <mkdir dir="${dist.dir}" />
+        <mkdir dir="${dist.backup.dir}" />
+        <mkdir dir="${dist.log.dir}" />
+        <mkdir dir="${dist.bin.dir}" />
+        <mkdir dir="${dist.dist.dir}" />
+    	<mkdir dir="${dist.lib.dir}" />
+    	<mkdir dir="${dist.class.dir}" />
+    	
+        <copy todir="${dist.dist.dir}" includeemptydirs="false">
+               <fileset dir="${project.java.dir}/" includes="log4j.xml, *.properties"/>
+        	   <fileset dir="${project.lib.dir}/" includes="*.properties"/>
+        </copy> 
+        <copy todir="${dist.lib.dir}" includeemptydirs="false">
+               <fileset dir="${project.lib.dir}/" includes="*" excludes="*.properties"/>
+        </copy>
+    	<!--copy todir="${dist.dist.dir}" includeemptydirs="false">
+    	       <fileset dir="${project.lib.dir}/" includes="*.properties"/>
+    	</copy-->
+    	<copy todir="${dist.bin.dir}" includeemptydirs="false">
+               <fileset dir="${project.java.dir}/" includes="*.bat"/>
+        </copy>
+    </target>
+    
+    <!-- ######################################################### -->
+    <!-- build  -->
+    <!-- ######################################################### -->
+    <target name="build-bulker" depends="init-bulker, init-dist">
+        <!-- Compile Java Source -->
+        <javac destdir="${bulker.build.classes.dir}" encoding="${build.charset}" debug="${build.debug}">
+            <src path="${bulker.java.dir}"/>
+            <include name="**/*"/>
+            <classpath>
+                <path refid="Project.classpath" />
+            </classpath>            
+        </javac>
+        
+        <copy todir="${bulker.build.classes.dir}" includeemptydirs="false">
+               <fileset dir="${bulker.java.dir}/" includes="**/*.xml" excludes="log4j.xml" />
+        </copy>
+    	
+    	<!-- Copy Etc Reader -->
+    	<copy todir="${dist.class.dir}" includeemptydirs="false">
+    		<fileset dir="${bulker.classes.except.dir}/" includes="**/*" />
+    	</copy>
+    	
+    	<!-- Delete Etc Reader -->
+    	<delete dir="${bulker.classes.except.dir}" />
+    </target>   
+    
+    
+    <!-- ######################################################### -->
+    <!-- jar packaging-->
+    <!-- ######################################################### -->
+    
+    <target name="jar-bulker" depends="build-bulker">
+        <jar destfile="${dist.dist.dir}/bulker.jar" 
+        	compress="true" 
+        	basedir="${bulker.build.classes.dir}"
+        />
+        
+        <copy todir="C:/Programs/elastic/bulker">
+            <fileset dir="${dist.dir}" />
+        </copy>
+
+    	<delete dir="${dist.dir}" />
+    	<delete dir="${bulker.project.dir}" />
+    		
+    </target>
+	
+</project>
+
